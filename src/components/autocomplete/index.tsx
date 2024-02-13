@@ -4,35 +4,35 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Input } from "../ui/input";
 import { Option, SelectedOptions } from "./components";
 
-export type BaseAutocompleteProps = {
+export type BaseAutocompleteProps<T> = {
   // the options that are available for choosing, for the best DX, allow array of any type
-  options: any;
+  options: Array<T>;
   // is multi select or single value select
   isMulti: boolean;
   // a function to call when we want to generate a label from an option
-  getOptionLabel: any;
+  getOptionLabel: (option: T) => string;
   // a function to call when we want to generate an id (string) from an option
-  getOptionID: any;
+  getOptionID: (option: T) => string;
   // a function that receives an option and the search term and returns true if the option matches the search and false otherwise
-  filterFunction: any;
-  // onChange function, can receive array of options or single option
-  onChange: any;
+  filterFunction: (option: T, searchTerm: string) => boolean;
 };
 
-// export type MultiOrSingular =
-//   // if is multi is true the on change will receive an array of selected options
-//   | { isMulti: true; onChange: any }
-//   // if is multi is false the on change will receive a single value
-//   | { isMulti: false; onChange: any };
+export type MultiOrSingular<T> =
+  // if is multi is true the on change will receive an array of selected options
+  | { isMulti: true; onChange: (value: Array<T>) => void }
+  // if is multi is false the on change will receive a single value
+  | { isMulti: false; onChange: (value: T) => void };
 
-export const Autocomplete = ({
+type AutocompleteProps<T> = BaseAutocompleteProps<T> & MultiOrSingular<T>;
+
+export const Autocomplete = <T,>({
   options,
   getOptionID,
   isMulti,
   onChange,
   filterFunction,
   getOptionLabel,
-}: BaseAutocompleteProps) => {
+}: AutocompleteProps<T>) => {
   const { selectedOptions, toggleOption } = UseAutocompleteOptions({
     isMulti,
     getOptionID,
